@@ -18,6 +18,7 @@ This extension adds TripoSG 3D mesh generation capabilities to ComfyUI, allowing
   ```
   pip install -r requirements.txt
   ```
+Warning: Torch Cluster takes a while to build, that's expected!
 
 ## Notes
 
