@@ -1,0 +1,14 @@
+torch>=2.0.0
+torch_cluster
+trimesh
+diffusers>=0.31.0
+accelerate
+huggingface_hub
+einops
+opencv-python
+transformers
+scikit-image
+numpy
+tqdm
+peft
+omegaconf 
