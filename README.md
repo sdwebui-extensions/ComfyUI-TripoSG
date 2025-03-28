@@ -11,7 +11,7 @@ This extension adds TripoSG 3D mesh generation capabilities to ComfyUI, allowing
 
 1. Clone the repository to your custom_nodes folder:
    ```
-   git clone https://github.com/fredconex/TripoSG.git
+   git clone https://github.com/fredconex/ComfyUI-TripoSG.git
    ```
 
 2. Install dependencies(For portable use python embeded):
