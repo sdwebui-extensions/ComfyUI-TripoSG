@@ -1,5 +1,5 @@
 # TripoSG Nodes for ComfyUI
-created by Alfredo Fernandes inspired by Hunyuan3D nodes by Kijai
+Created by Alfredo Fernandes inspired by Hunyuan3D nodes by Kijai
 
 This extension adds TripoSG 3D mesh generation capabilities to ComfyUI, allowing you to generate 3D meshes from a single image using the TripoSG model.
 
@@ -8,18 +8,16 @@ This extension adds TripoSG 3D mesh generation capabilities to ComfyUI, allowing
 1. Clone the model to "comfyui/models/diffusers":
   ```
   git clone https://huggingface.co/VAST-AI/TripoSG
-  ````
-
+  ```
 1. Clone the repository to your custom_nodes folder:
-   ```
-   git clone https://github.com/fredconex/ComfyUI-TripoSG.git
-   ```
-
+  ```
+  git clone https://github.com/fredconex/ComfyUI-TripoSG.git
+  cd ComfyUI-TripoSG
+  ```
 2. Install dependencies(For portable use python embeded):
-   ```
-   cd TripoSG
-   pip install -r requirements.txt
-   ```
+  ```
+  pip install -r requirements.txt
+  ```
 
 ## Notes
 
