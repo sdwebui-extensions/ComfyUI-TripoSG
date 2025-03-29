@@ -24,4 +24,6 @@ Warning: Torch Cluster takes a while to build, that's expected!
 
 - Higher values for the octree depth parameters will result in more detailed meshes but require more VRAM and processing time.
 - TripoSG model outputs a clean mesh that usually doesn't require post-processing.
-- You can use the standard ComfyUI mesh viewing and processing nodes with the output from TripoSG. 
+- You can use the standard ComfyUI mesh viewing and processing nodes with the output from TripoSG.
+
+![image](https://github.com/user-attachments/assets/ca51103e-7454-44bf-974d-0403a157da05)
