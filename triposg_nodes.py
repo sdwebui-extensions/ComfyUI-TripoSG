@@ -58,8 +58,8 @@ class TripoSGModelLoader:
             }
         }
 
-    RETURN_TYPES = ("TRIPOSG_MODEL",)
-    RETURN_NAMES = ("triposg_model",)
+    RETURN_TYPES = ("TRIPOSG_MODEL", "TRIPOSG_VAE")
+    RETURN_NAMES = ("triposg_model", "triposg_vae")
     FUNCTION = "loadmodel"
     CATEGORY = "TripoSG"
     DESCRIPTION = "Loads a TripoSG model for 3D mesh generation from a single image"
@@ -89,7 +89,95 @@ class TripoSGModelLoader:
         # Load TripoSG pipeline
         pipe = TripoSGPipeline.from_pretrained(model_path).to(device, dtype)
         
-        return (pipe,)
+        return (pipe, pipe.vae)
+
+class TripoSGVAEDecoder:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "latents": ("LATENTS", {"default": None}),
+                "triposg_vae": ("TRIPOSG_VAE",),
+                "bound_value": ("FLOAT", {"default": 1.005, "min": 0.5, "max": 2.0, "step": 0.005, "tooltip": "Single value for bounds (creates -value to +value for all dimensions)"}),
+                "dense_octree_depth": ("INT", {"default": 8, "min": 4, "max": 12, "step": 1}),
+                "hierarchical_octree_depth": ("INT", {"default": 9, "min": 5, "max": 12, "step": 1}),
+                "chunk_size": ("INT", {"default": 256000, "min": 8192, "max": 512000, "step": 8192, "tooltip": "Number of points to process at once (higher values use more VRAM)"}),
+            }
+        }
+
+    RETURN_TYPES = ("TRIMESH",)
+    RETURN_NAMES = ("trimesh",)
+    FUNCTION = "process"
+    CATEGORY = "TripoSG"
+    DESCRIPTION = "Decodes latents to a 3D mesh using the TripoSG VAE decoder"
+
+    def process(self, triposg_vae, latents, bound_value, dense_octree_depth, hierarchical_octree_depth, chunk_size):
+        device = mm.get_torch_device()
+        
+        # Ensure latents are in the right format and on the right device
+        if latents is not None:
+            latents = latents.to(device=device, dtype=triposg_vae.dtype)
+        else:
+            log.error("No latents provided to VAE decoder")
+            # Return an empty trimesh as fallback
+            return (Trimesh.Trimesh(),)
+        
+        # Create symmetric bounds from the single value
+        bounds = (-bound_value, -bound_value, -bound_value, bound_value, bound_value, bound_value)
+        log.info(f"Using bounds: {bounds}")
+        
+        # Create geometric function for mesh extraction with chunking support
+        def geometric_func(x):
+            # Process in chunks to save memory
+            num_points = x.shape[1]
+            chunks = []
+            
+            # Calculate total number of chunks
+            total_chunks = (num_points + chunk_size - 1) // chunk_size
+            pbar = ProgressBar(total_chunks)
+            log.info(f"Processing {num_points} points in chunks of {chunk_size}")
+            
+            for i in range(0, num_points, chunk_size):
+                # Get the current chunk of points
+                chunk = x[:, i:i+chunk_size, :]
+                # Process chunk
+                chunk_result = triposg_vae.decode(latents, sampled_points=chunk).sample
+                chunks.append(chunk_result)
+                # Update progress bar
+                pbar.update(1)
+                
+            # Combine the processed chunks
+            return torch.cat(chunks, dim=1)
+        
+        # Extract mesh
+        from .triposg.inference_utils import hierarchical_extract_geometry
+        
+        # Warn about high memory usage for large octree depths
+        total_depth = dense_octree_depth + hierarchical_octree_depth
+        if total_depth > 18:
+            log.warning(f"High octree depth values (total: {total_depth}) may cause memory issues")
+        
+        try:
+            output = hierarchical_extract_geometry(
+                geometric_func,
+                device,
+                bounds=bounds,
+                dense_octree_depth=dense_octree_depth,
+                hierarchical_octree_depth=hierarchical_octree_depth,
+            )
+            
+            if output is None or len(output) == 0:
+                log.error("Mesh extraction failed, likely due to memory constraints with high octree depths")
+                return (Trimesh.Trimesh(),)
+                
+            # Create trimesh
+            mesh = Trimesh.Trimesh(output[0][0].astype(np.float32), np.ascontiguousarray(output[0][1]))
+            
+            return (mesh,)
+        except Exception as e:
+            log.error(f"Error during mesh extraction: {str(e)}")
+            log.error("Try reducing octree depth values or increasing chunk size")
+            return (Trimesh.Trimesh(),)
 
 class TripoSGImageToMesh:
     @classmethod
@@ -101,19 +189,16 @@ class TripoSGImageToMesh:
                 "guidance_scale": ("FLOAT", {"default": 7.0, "min": 0.0, "max": 100.0, "step": 0.01}),
                 "steps": ("INT", {"default": 50, "min": 1, "max": 1000, "step": 1}),
                 "seed": ("INT", {"default": 42, "min": 0, "max": 0xffffffffffffffff}),
-                "dense_octree_depth": ("INT", {"default": 8, "min": 4, "max": 12, "step": 1}),
-                "hierarchical_octree_depth": ("INT", {"default": 9, "min": 5, "max": 12, "step": 1}),
             }
         }
 
-    RETURN_TYPES = ("TRIMESH",)
-    RETURN_NAMES = ("trimesh",)
+    RETURN_TYPES = ("LATENTS",)
+    RETURN_NAMES = ("latents",)
     FUNCTION = "process"
     CATEGORY = "TripoSG"
-    DESCRIPTION = "Generates a 3D mesh from a single image using TripoSG"
+    DESCRIPTION = "Generates latents from a single image using TripoSG (without decoding to mesh)"
 
-    def process(self, triposg_model, image, guidance_scale, steps, seed, 
-                dense_octree_depth, hierarchical_octree_depth):
+    def process(self, triposg_model, image, guidance_scale, steps, seed):
         device = mm.get_torch_device()
         pipe = triposg_model
         
@@ -126,21 +211,67 @@ class TripoSGImageToMesh:
         # Setup progress bar
         callback = ComfyProgressCallback(steps)
         
-        # Generate mesh
-        outputs = pipe(
-            image=image_pil,
-            generator=torch.Generator(device=pipe.device).manual_seed(seed),
-            num_inference_steps=steps,
-            guidance_scale=guidance_scale,
-            dense_octree_depth=dense_octree_depth,
-            hierarchical_octree_depth=hierarchical_octree_depth,
-            callback_on_step_end=callback,
-        ).samples[0]
+        # Prepare latents
+        generator = torch.Generator(device=pipe.device).manual_seed(seed)
         
-        # Create trimesh
-        mesh = Trimesh.Trimesh(outputs[0].astype(np.float32), np.ascontiguousarray(outputs[1]))
+        # 1. Encode image
+        image_embeds, negative_image_embeds = pipe.encode_image(
+            image_pil, device=pipe.device, num_images_per_prompt=1
+        )
         
-        return (mesh,)
+        # 2. Prepare timesteps
+        pipe._num_timesteps = steps
+        pipe._guidance_scale = guidance_scale
+        pipe.scheduler.set_timesteps(steps, device=pipe.device)
+        timesteps = pipe.scheduler.timesteps
+        
+        # 3. Prepare initial latents
+        latents_dtype = image_embeds.dtype
+        # The error indicates we need dimensions compatible with transformer's projection layer
+        # Looking at the error, we need to reshape the latents to have features last
+        hidden_size = 64  # TripoSG transformer input dimension
+        sample_size = 2048  # Standard sample size for TripoSG
+        # Reshape to have sequence length first, hidden dim last: (batch, seq_len, hidden_dim)
+        latents_shape = (1, sample_size, hidden_size)
+        latents = torch.randn(latents_shape, generator=generator, device=pipe.device, dtype=latents_dtype)
+        
+        # 4. Denoising loop
+        for i, t in enumerate(timesteps):
+            # For classifier-free guidance, we need to do two forward passes
+            # We need to duplicate along the batch dimension (dim=0), not feature dimension
+            latent_model_input = torch.cat([latents, latents], dim=0) if pipe.do_classifier_free_guidance else latents
+            
+            # Create timestep tensor with correct batch size
+            if pipe.do_classifier_free_guidance:
+                # For classifier free guidance we need a timestep tensor with batch_size=2
+                timestep = torch.tensor([t, t], device=pipe.device)
+            else:
+                # For regular inference batch_size=1
+                timestep = torch.tensor([t], device=pipe.device)
+            
+            noise_pred = pipe.transformer(
+                latent_model_input,
+                timestep=timestep,
+                encoder_hidden_states=torch.cat([negative_image_embeds, image_embeds]) if pipe.do_classifier_free_guidance else image_embeds,
+                return_dict=False,
+            )[0]
+            
+            # Perform guidance
+            if pipe.do_classifier_free_guidance:
+                noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)
+                noise_pred = noise_pred_uncond + pipe.guidance_scale * (noise_pred_text - noise_pred_uncond)
+            
+            # Compute previous noisy sample
+            latents = pipe.scheduler.step(noise_pred, t, latents, return_dict=False)[0]
+            
+            # Update progress bar
+            if callback is not None:
+                callback_kwargs = {"latents": latents}
+                callback(pipe, i, t, callback_kwargs)
+                
+        # Convert to standard ComfyUI latents format if needed
+        # Return the latents in the expected format for ComfyUI
+        return (latents,)
 
 class TripoSGMeshInfo:
     @classmethod
@@ -207,13 +338,15 @@ class TripoSGExportMesh:
 NODE_CLASS_MAPPINGS = {
     "TripoSGModelLoader": TripoSGModelLoader,
     "TripoSGImageToMesh": TripoSGImageToMesh,
+    "TripoSGVAEDecoder": TripoSGVAEDecoder,
     "TripoSGMeshInfo": TripoSGMeshInfo,
     "TripoSGExportMesh": TripoSGExportMesh
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "TripoSGModelLoader": "TripoSG Model Loader",
-    "TripoSGImageToMesh": "TripoSG Image to Mesh",
+    "TripoSGImageToMesh": "TripoSG Image to Latents",
+    "TripoSGVAEDecoder": "TripoSG VAE Decoder",
     "TripoSGMeshInfo": "TripoSG Mesh Info",
     "TripoSGExportMesh": "TripoSG Export Mesh"
 } 
