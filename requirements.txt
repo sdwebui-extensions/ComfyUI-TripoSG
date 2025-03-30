@@ -11,6 +11,3 @@ scikit-image
 numpy
 tqdm
 peft
-omegaconf
-jaxtyping
-typeguard
