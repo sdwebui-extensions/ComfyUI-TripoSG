@@ -26,7 +26,8 @@ Warning: Torch Cluster takes a while to build, that's expected!
 - TripoSG model outputs a clean mesh that usually doesn't require post-processing.
 - You can use the standard ComfyUI mesh viewing and processing nodes with the output from TripoSG.
 
-![workflow (1)](https://github.com/user-attachments/assets/9785b543-ac26-4205-80bb-002d1b2f5993)
+![workflow (3)](https://github.com/user-attachments/assets/dacfd371-4200-4629-b5f7-a6735344fb9d)
 
-## TripoSG Repository
+## Aknowledgements
 https://github.com/VAST-AI-Research/TripoSG
+https://github.com/kijai/ComfyUI-Hunyuan3DWrapper
