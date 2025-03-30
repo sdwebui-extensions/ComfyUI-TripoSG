@@ -27,3 +27,6 @@ Warning: Torch Cluster takes a while to build, that's expected!
 - You can use the standard ComfyUI mesh viewing and processing nodes with the output from TripoSG.
 
 ![workflow (1)](https://github.com/user-attachments/assets/9785b543-ac26-4205-80bb-002d1b2f5993)
+
+## TripoSG Repository
+https://github.com/VAST-AI-Research/TripoSG
