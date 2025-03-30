@@ -1,28 +1,19 @@
 import os
 import torch
-import torchvision.transforms as transforms
-import torch.nn.functional as F
-from PIL import Image
-from pathlib import Path
 import numpy as np
-import json
 import trimesh as Trimesh
-from tqdm import tqdm
-
-# Update imports for TripoSG
-from .triposg.pipelines.pipeline_triposg import TripoSGPipeline
-from .triposg.models.autoencoders import TripoSGVAEModel
-
-from diffusers.schedulers import FlowMatchEulerDiscreteScheduler
-
-import comfy.utils
 import folder_paths
 import comfy.model_management as mm
-from comfy.utils import load_torch_file, ProgressBar, common_upscale
+from PIL import Image
+from comfy.utils import ProgressBar
+
+# TripoSG model imports
+from .triposg.pipelines.pipeline_triposg import TripoSGPipeline
+
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 
-# Create a simple logger since we don't have access to the Hunyuan utility
+# Simple logger for TripoSG operations
 class Logger:
     def info(self, message):
         print(f"[TripoSG INFO] {message}")
@@ -41,8 +32,6 @@ class ComfyProgressCallback:
         
     def __call__(self, pipe, i, t, callback_kwargs):
         self.pbar.update(1)
-        # Return only the keys that actually exist in callback_kwargs
-        # Don't try to access keys that might not be there
         return callback_kwargs
 
 class TripoSGModelLoader:
@@ -86,7 +75,6 @@ class TripoSGModelLoader:
             else:
                 raise ValueError(f"Model path {model_path} does not exist")
         
-        # Load TripoSG pipeline
         pipe = TripoSGPipeline.from_pretrained(model_path).to(device, dtype)
         
         return (pipe, pipe.vae)
@@ -114,45 +102,37 @@ class TripoSGVAEDecoder:
     def process(self, triposg_vae, latents, bound_value, dense_octree_depth, hierarchical_octree_depth, chunk_size):
         device = mm.get_torch_device()
         
-        # Ensure latents are in the right format and on the right device
+        # Ensure latents are properly formatted
         if latents is not None:
             latents = latents.to(device=device, dtype=triposg_vae.dtype)
         else:
             log.error("No latents provided to VAE decoder")
-            # Return an empty trimesh as fallback
             return (Trimesh.Trimesh(),)
         
         # Create symmetric bounds from the single value
         bounds = (-bound_value, -bound_value, -bound_value, bound_value, bound_value, bound_value)
         log.info(f"Using bounds: {bounds}")
         
-        # Create geometric function for mesh extraction with chunking support
+        # Create geometric function for mesh extraction with memory-efficient chunking
         def geometric_func(x):
-            # Process in chunks to save memory
             num_points = x.shape[1]
             chunks = []
             
-            # Calculate total number of chunks
             total_chunks = (num_points + chunk_size - 1) // chunk_size
             pbar = ProgressBar(total_chunks)
             log.info(f"Processing {num_points} points in chunks of {chunk_size}")
             
             for i in range(0, num_points, chunk_size):
-                # Get the current chunk of points
                 chunk = x[:, i:i+chunk_size, :]
-                # Process chunk
                 chunk_result = triposg_vae.decode(latents, sampled_points=chunk).sample
                 chunks.append(chunk_result)
-                # Update progress bar
                 pbar.update(1)
                 
-            # Combine the processed chunks
             return torch.cat(chunks, dim=1)
         
-        # Extract mesh
         from .triposg.inference_utils import hierarchical_extract_geometry
         
-        # Warn about high memory usage for large octree depths
+        # Memory usage warning for high octree depth values
         total_depth = dense_octree_depth + hierarchical_octree_depth
         if total_depth > 18:
             log.warning(f"High octree depth values (total: {total_depth}) may cause memory issues")
@@ -170,7 +150,7 @@ class TripoSGVAEDecoder:
                 log.error("Mesh extraction failed, likely due to memory constraints with high octree depths")
                 return (Trimesh.Trimesh(),)
                 
-            # Create trimesh
+            # Create trimesh from extracted geometry
             mesh = Trimesh.Trimesh(output[0][0].astype(np.float32), np.ascontiguousarray(output[0][1]))
             
             return (mesh,)
@@ -208,47 +188,42 @@ class TripoSGImageToMesh:
         
         image_pil = Image.fromarray((image[0] * 255).numpy().astype(np.uint8))
         
-        # Setup progress bar
+        # Setup progress tracking
         callback = ComfyProgressCallback(steps)
         
-        # Prepare latents
+        # Prepare latents with proper seed for reproducibility
         generator = torch.Generator(device=pipe.device).manual_seed(seed)
         
-        # 1. Encode image
+        # Encode input image
         image_embeds, negative_image_embeds = pipe.encode_image(
             image_pil, device=pipe.device, num_images_per_prompt=1
         )
         
-        # 2. Prepare timesteps
+        # Set up generation parameters
         pipe._num_timesteps = steps
         pipe._guidance_scale = guidance_scale
         pipe.scheduler.set_timesteps(steps, device=pipe.device)
         timesteps = pipe.scheduler.timesteps
         
-        # 3. Prepare initial latents
+        # Initialize latent space representation
         latents_dtype = image_embeds.dtype
-        # The error indicates we need dimensions compatible with transformer's projection layer
-        # Looking at the error, we need to reshape the latents to have features last
-        hidden_size = 64  # TripoSG transformer input dimension
+        hidden_size = 64  # Transformer input dimension
         sample_size = 2048  # Standard sample size for TripoSG
-        # Reshape to have sequence length first, hidden dim last: (batch, seq_len, hidden_dim)
         latents_shape = (1, sample_size, hidden_size)
         latents = torch.randn(latents_shape, generator=generator, device=pipe.device, dtype=latents_dtype)
         
-        # 4. Denoising loop
+        # Run denoising diffusion process
         for i, t in enumerate(timesteps):
-            # For classifier-free guidance, we need to do two forward passes
-            # We need to duplicate along the batch dimension (dim=0), not feature dimension
+            # Handle classifier-free guidance if enabled
             latent_model_input = torch.cat([latents, latents], dim=0) if pipe.do_classifier_free_guidance else latents
             
-            # Create timestep tensor with correct batch size
+            # Create appropriate timestep tensor
             if pipe.do_classifier_free_guidance:
-                # For classifier free guidance we need a timestep tensor with batch_size=2
                 timestep = torch.tensor([t, t], device=pipe.device)
             else:
-                # For regular inference batch_size=1
                 timestep = torch.tensor([t], device=pipe.device)
             
+            # Get model prediction
             noise_pred = pipe.transformer(
                 latent_model_input,
                 timestep=timestep,
@@ -256,21 +231,19 @@ class TripoSGImageToMesh:
                 return_dict=False,
             )[0]
             
-            # Perform guidance
+            # Apply classifier-free guidance
             if pipe.do_classifier_free_guidance:
                 noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)
                 noise_pred = noise_pred_uncond + pipe.guidance_scale * (noise_pred_text - noise_pred_uncond)
             
-            # Compute previous noisy sample
+            # Update latents with scheduler step
             latents = pipe.scheduler.step(noise_pred, t, latents, return_dict=False)[0]
             
-            # Update progress bar
+            # Update progress
             if callback is not None:
                 callback_kwargs = {"latents": latents}
                 callback(pipe, i, t, callback_kwargs)
                 
-        # Convert to standard ComfyUI latents format if needed
-        # Return the latents in the expected format for ComfyUI
         return (latents,)
 
 class TripoSGMeshInfo:
@@ -321,10 +294,10 @@ class TripoSGExportMesh:
         output_dir = folder_paths.get_output_directory()
         out_path = os.path.join(output_dir, filename_prefix)
         
-        # Create directory if it doesn't exist
+        # Create directory if needed
         os.makedirs(os.path.dirname(out_path), exist_ok=True)
         
-        # Add timestamp to filename to avoid overwriting
+        # Add timestamp to prevent overwriting
         import time
         filename = f"{out_path}_{int(time.time())}.{file_format}"
         
@@ -334,7 +307,7 @@ class TripoSGExportMesh:
             
         return (filename,)
 
-# Node mapping dictionaries for export
+# Node mapping for ComfyUI integration
 NODE_CLASS_MAPPINGS = {
     "TripoSGModelLoader": TripoSGModelLoader,
     "TripoSGImageToMesh": TripoSGImageToMesh,
