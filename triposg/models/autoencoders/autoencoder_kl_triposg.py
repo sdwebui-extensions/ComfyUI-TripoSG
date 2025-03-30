@@ -11,8 +11,6 @@ from diffusers.models.modeling_utils import ModelMixin
 from diffusers.models.normalization import FP32LayerNorm, LayerNorm
 from diffusers.utils import logging
 from diffusers.utils.accelerate_utils import apply_forward_hook
-from einops import repeat
-from torch_cluster import fps
 from tqdm import tqdm
 
 from ..attention_processor import FusedTripoSGAttnProcessor2_0, TripoSGAttnProcessor2_0
@@ -415,7 +413,7 @@ class TripoSGVAEModel(ModelMixin, ConfigMixin):
 
         # fps sampling
         sampling_ratio = 1.0 / 4
-        sampled_indices = fps(
+        sampled_indices = custom_fps(
             flattened_points[:, :3],
             batch_indices,
             ratio=sampling_ratio,
@@ -525,3 +523,73 @@ class TripoSGVAEModel(ModelMixin, ConfigMixin):
 
     def forward(self, x: torch.Tensor):
         pass
+
+def custom_fps(xyz, batch, ratio=0.5, random_start=True):
+    """
+    Custom implementation of farthest point sampling using PyTorch.
+    
+    Args:
+        xyz (torch.Tensor): (N, 3) tensor of points
+        batch (torch.Tensor): (N,) tensor indicating which batch each point belongs to
+        ratio (float): Sampling ratio
+        random_start (bool): Whether to use random starting points
+        
+    Returns:
+        torch.Tensor: indices of sampled points
+    """
+    device = xyz.device
+    batch_size = batch.max().item() + 1
+    
+    # Process each batch separately
+    all_indices = []
+    
+    for i in range(batch_size):
+        # Get points for this batch
+        mask = batch == i
+        if not mask.any():
+            continue
+            
+        x = xyz[mask]
+        n = x.shape[0]
+        if n <= 1:
+            all_indices.append(torch.where(mask)[0])
+            continue
+            
+        # Number of points to sample
+        m = max(1, int(n * ratio))
+        
+        # Initialize distances
+        dists = torch.ones(n, device=device) * 1e10
+        
+        # Select first point (random or first)
+        if random_start:
+            idx = torch.randint(0, n, (1,), device=device)[0]
+        else:
+            idx = 0
+            
+        # Output indices
+        indices = torch.zeros(m, dtype=torch.long, device=device)
+        indices[0] = idx
+        
+        # Iteratively select farthest points
+        for j in range(1, m):
+            last_idx = indices[j-1]
+            
+            # Calculate squared distances to the last chosen point
+            squared_dist = torch.sum((x - x[last_idx].unsqueeze(0)) ** 2, dim=-1)
+            
+            # Update min distances for each point
+            dists = torch.minimum(dists, squared_dist)
+            
+            # Select the farthest point
+            idx = torch.argmax(dists)
+            indices[j] = idx
+            
+        # Map back to original indices
+        batch_indices = torch.where(mask)[0][indices]
+        all_indices.append(batch_indices)
+    
+    # Combine all batches
+    if all_indices:
+        return torch.cat(all_indices)
+    return torch.tensor([], dtype=torch.long, device=device)
