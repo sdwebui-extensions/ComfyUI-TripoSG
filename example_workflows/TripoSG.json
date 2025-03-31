@@ -1,6 +1,8 @@
 {
-  "last_node_id": 80,
-  "last_link_id": 180,
+  "id": "24259a8d-699f-42f4-bd6d-f58b65f3d67e",
+  "revision": 0,
+  "last_node_id": 81,
+  "last_link_id": 183,
   "nodes": [
     {
       "id": 50,
@@ -14,15 +16,17 @@
         258
       ],
       "flags": {},
-      "order": 12,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
+          "label": "图像",
           "name": "image",
           "type": "IMAGE",
           "link": 145
         },
         {
+          "label": "左",
           "name": "left_padding",
           "type": "INT",
           "widget": {
@@ -31,6 +35,7 @@
           "link": 100
         },
         {
+          "label": "右",
           "name": "right_padding",
           "type": "INT",
           "widget": {
@@ -39,6 +44,7 @@
           "link": 101
         },
         {
+          "label": "上",
           "name": "top_padding",
           "type": "INT",
           "widget": {
@@ -47,6 +53,7 @@
           "link": 102
         },
         {
+          "label": "下",
           "name": "bottom_padding",
           "type": "INT",
           "widget": {
@@ -57,12 +64,13 @@
       ],
       "outputs": [
         {
+          "label": "图像",
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
             134
-          ],
-          "slot_index": 0
+          ]
         },
         {
           "name": "MASK",
@@ -71,9 +79,9 @@
         }
       ],
       "properties": {
+        "Node name for S&R": "Image Padding",
         "cnr_id": "pr-was-node-suite-comfyui-47064894",
-        "ver": "3ed45af34a14551dc28cb3127235cc7197d4633f",
-        "Node name for S&R": "Image Padding"
+        "ver": "3ed45af34a14551dc28cb3127235cc7197d4633f"
       },
       "widgets_values": [
         0,
@@ -96,10 +104,11 @@
         46
       ],
       "flags": {},
-      "order": 6,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
+          "label": "图像",
           "name": "image",
           "type": "IMAGE",
           "link": 155
@@ -107,14 +116,16 @@
       ],
       "outputs": [
         {
+          "label": "图像",
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
             144
-          ],
-          "slot_index": 0
+          ]
         },
         {
+          "label": "遮罩",
           "name": "MASK",
           "type": "MASK",
           "links": [
@@ -123,9 +134,9 @@
         }
       ],
       "properties": {
+        "Node name for S&R": "SplitImageWithAlpha",
         "cnr_id": "comfy-core",
-        "ver": "0.3.26",
-        "Node name for S&R": "SplitImageWithAlpha"
+        "ver": "0.3.26"
       },
       "widgets_values": []
     },
@@ -141,10 +152,11 @@
         26
       ],
       "flags": {},
-      "order": 8,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
+          "label": "遮罩",
           "name": "mask",
           "type": "MASK",
           "link": 31
@@ -152,18 +164,19 @@
       ],
       "outputs": [
         {
+          "label": "遮罩",
           "name": "MASK",
           "type": "MASK",
+          "slot_index": 0,
           "links": [
             146
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "Node name for S&R": "InvertMask",
         "cnr_id": "comfy-core",
-        "ver": "0.3.26",
-        "Node name for S&R": "InvertMask"
+        "ver": "0.3.26"
       },
       "widgets_values": []
     },
@@ -181,10 +194,11 @@
       "flags": {
         "collapsed": true
       },
-      "order": 5,
+      "order": 4,
       "mode": 0,
       "inputs": [
         {
+          "label": "图像",
           "name": "image",
           "type": "IMAGE",
           "link": 154
@@ -192,29 +206,32 @@
       ],
       "outputs": [
         {
+          "label": "图像",
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
             155,
             156
-          ],
-          "slot_index": 0
+          ]
         },
         {
+          "label": "宽度",
           "name": "width",
           "type": "INT",
           "links": null
         },
         {
+          "label": "高度",
           "name": "height",
           "type": "INT",
           "links": null
         }
       ],
       "properties": {
+        "Node name for S&R": "ImageResize+",
         "cnr_id": "comfyui_essentials",
-        "ver": "33ff89fd354d8ec3ab6affb605a79a931b445d99",
-        "Node name for S&R": "ImageResize+"
+        "ver": "33ff89fd354d8ec3ab6affb605a79a931b445d99"
       },
       "widgets_values": [
         1024,
@@ -239,83 +256,58 @@
       "flags": {
         "collapsed": false
       },
-      "order": 9,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
+          "label": "A",
           "name": "a",
-          "type": "*",
           "shape": 7,
+          "type": "*",
           "link": 99
         },
         {
+          "label": "B",
           "name": "b",
-          "type": "*",
           "shape": 7,
+          "type": "*",
           "link": null
         },
         {
           "name": "c",
-          "type": "*",
           "shape": 7,
+          "type": "*",
           "link": null
         }
       ],
       "outputs": [
         {
+          "label": "整数",
           "name": "INT",
           "type": "INT",
+          "slot_index": 0,
           "links": [
             100,
             101,
             102,
             103
-          ],
-          "slot_index": 0
+          ]
         },
         {
+          "label": "浮点",
           "name": "FLOAT",
           "type": "FLOAT",
           "links": null
         }
       ],
       "properties": {
+        "Node name for S&R": "SimpleMath+",
         "cnr_id": "comfyui_essentials",
-        "ver": "33ff89fd354d8ec3ab6affb605a79a931b445d99",
-        "Node name for S&R": "SimpleMath+"
+        "ver": "33ff89fd354d8ec3ab6affb605a79a931b445d99"
       },
       "widgets_values": [
         "a*0.1"
       ]
-    },
-    {
-      "id": 55,
-      "type": "PreviewImage",
-      "pos": [
-        936.0848999023438,
-        332.0576477050781
-      ],
-      "size": [
-        629.664306640625,
-        667.927001953125
-      ],
-      "flags": {},
-      "order": 19,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 153
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.26",
-        "Node name for S&R": "PreviewImage"
-      },
-      "widgets_values": []
     },
     {
       "id": 53,
@@ -329,10 +321,11 @@
         66
       ],
       "flags": {},
-      "order": 7,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
+          "label": "图像",
           "name": "image",
           "type": "IMAGE",
           "link": 156
@@ -340,21 +333,23 @@
       ],
       "outputs": [
         {
+          "label": "宽度",
           "name": "width",
           "type": "INT",
+          "slot_index": 0,
           "links": [
             97,
             99
-          ],
-          "slot_index": 0
+          ]
         },
         {
+          "label": "高度",
           "name": "height",
           "type": "INT",
+          "slot_index": 1,
           "links": [
             98
-          ],
-          "slot_index": 1
+          ]
         },
         {
           "name": "count",
@@ -363,9 +358,9 @@
         }
       ],
       "properties": {
+        "Node name for S&R": "GetImageSize+",
         "cnr_id": "comfyui_essentials",
-        "ver": "33ff89fd354d8ec3ab6affb605a79a931b445d99",
-        "Node name for S&R": "GetImageSize+"
+        "ver": "33ff89fd354d8ec3ab6affb605a79a931b445d99"
       },
       "widgets_values": []
     },
@@ -381,40 +376,44 @@
         186
       ],
       "flags": {},
-      "order": 11,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
+          "label": "目标图像",
           "name": "destination",
           "type": "IMAGE",
           "link": 143
         },
         {
+          "label": "源图像",
           "name": "source",
           "type": "IMAGE",
           "link": 144
         },
         {
+          "label": "遮罩",
           "name": "mask",
-          "type": "MASK",
           "shape": 7,
+          "type": "MASK",
           "link": 146
         }
       ],
       "outputs": [
         {
+          "label": "图像",
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
             145
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "Node name for S&R": "ImageCompositeMasked",
         "cnr_id": "comfy-core",
-        "ver": "0.3.26",
-        "Node name for S&R": "ImageCompositeMasked"
+        "ver": "0.3.26"
       },
       "widgets_values": [
         0,
@@ -434,10 +433,11 @@
         150
       ],
       "flags": {},
-      "order": 16,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
+          "label": "宽度",
           "name": "width",
           "type": "INT",
           "widget": {
@@ -446,6 +446,7 @@
           "link": 128
         },
         {
+          "label": "高度",
           "name": "height",
           "type": "INT",
           "widget": {
@@ -456,18 +457,19 @@
       ],
       "outputs": [
         {
+          "label": "图像",
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
             130
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "Node name for S&R": "EmptyImage",
         "cnr_id": "comfy-core",
-        "ver": "0.3.26",
-        "Node name for S&R": "EmptyImage"
+        "ver": "0.3.26"
       },
       "widgets_values": [
         1024,
@@ -488,40 +490,44 @@
         186
       ],
       "flags": {},
-      "order": 17,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
+          "label": "目标图像",
           "name": "destination",
           "type": "IMAGE",
           "link": 130
         },
         {
+          "label": "源图像",
           "name": "source",
           "type": "IMAGE",
           "link": 135
         },
         {
+          "label": "遮罩",
           "name": "mask",
-          "type": "MASK",
           "shape": 7,
+          "type": "MASK",
           "link": 139
         }
       ],
       "outputs": [
         {
+          "label": "图像",
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
             152
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "Node name for S&R": "ImageCompositeMasked",
         "cnr_id": "comfy-core",
-        "ver": "0.3.26",
-        "Node name for S&R": "ImageCompositeMasked"
+        "ver": "0.3.26"
       },
       "widgets_values": [
         0,
@@ -541,10 +547,11 @@
         66
       ],
       "flags": {},
-      "order": 14,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
+          "label": "图像",
           "name": "image",
           "type": "IMAGE",
           "link": 136
@@ -552,20 +559,22 @@
       ],
       "outputs": [
         {
+          "label": "宽度",
           "name": "width",
           "type": "INT",
+          "slot_index": 0,
           "links": [
             128
-          ],
-          "slot_index": 0
+          ]
         },
         {
+          "label": "高度",
           "name": "height",
           "type": "INT",
+          "slot_index": 1,
           "links": [
             129
-          ],
-          "slot_index": 1
+          ]
         },
         {
           "name": "count",
@@ -574,9 +583,9 @@
         }
       ],
       "properties": {
+        "Node name for S&R": "GetImageSize+",
         "cnr_id": "comfyui_essentials",
-        "ver": "33ff89fd354d8ec3ab6affb605a79a931b445d99",
-        "Node name for S&R": "GetImageSize+"
+        "ver": "33ff89fd354d8ec3ab6affb605a79a931b445d99"
       },
       "widgets_values": []
     },
@@ -594,10 +603,11 @@
       "flags": {
         "collapsed": true
       },
-      "order": 15,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
+          "label": "遮罩",
           "name": "mask",
           "type": "MASK",
           "link": 138
@@ -605,18 +615,19 @@
       ],
       "outputs": [
         {
+          "label": "遮罩",
           "name": "MASK",
           "type": "MASK",
+          "slot_index": 0,
           "links": [
             139
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "Node name for S&R": "InvertMask",
         "cnr_id": "comfy-core",
-        "ver": "0.3.26",
-        "Node name for S&R": "InvertMask"
+        "ver": "0.3.26"
       },
       "widgets_values": []
     },
@@ -634,10 +645,11 @@
       "flags": {
         "collapsed": true
       },
-      "order": 13,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
+          "label": "图像",
           "name": "image",
           "type": "IMAGE",
           "link": 134
@@ -645,64 +657,31 @@
       ],
       "outputs": [
         {
+          "label": "图像",
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
             135,
             136
-          ],
-          "slot_index": 0
+          ]
         },
         {
+          "label": "遮罩",
           "name": "MASK",
           "type": "MASK",
+          "slot_index": 1,
           "links": [
             138
-          ],
-          "slot_index": 1
+          ]
         }
       ],
       "properties": {
+        "Node name for S&R": "SplitImageWithAlpha",
         "cnr_id": "comfy-core",
-        "ver": "0.3.26",
-        "Node name for S&R": "SplitImageWithAlpha"
+        "ver": "0.3.26"
       },
       "widgets_values": []
-    },
-    {
-      "id": 17,
-      "type": "TransparentBGSession+",
-      "pos": [
-        -648.987548828125,
-        -46.87177276611328
-      ],
-      "size": [
-        306.6600036621094,
-        82
-      ],
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "REMBG_SESSION",
-          "type": "REMBG_SESSION",
-          "links": [
-            16
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfyui_essentials",
-        "ver": "33ff89fd354d8ec3ab6affb605a79a931b445d99",
-        "Node name for S&R": "TransparentBGSession+"
-      },
-      "widgets_values": [
-        "base",
-        true
-      ]
     },
     {
       "id": 15,
@@ -718,40 +697,44 @@
       "flags": {
         "collapsed": false
       },
-      "order": 4,
+      "order": 3,
       "mode": 0,
       "inputs": [
         {
+          "label": "图像",
           "name": "image",
           "type": "IMAGE",
-          "link": 82
+          "link": 182
         },
         {
+          "label": "遮罩",
           "name": "mask",
           "type": "MASK",
-          "link": 83
+          "link": 183
         }
       ],
       "outputs": [
         {
+          "label": "图像",
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
             154
-          ],
-          "slot_index": 0
+          ]
         },
         {
+          "label": "边界",
           "name": "IMAGE_BOUNDS",
           "type": "IMAGE_BOUNDS",
-          "links": [],
-          "slot_index": 1
+          "slot_index": 1,
+          "links": []
         }
       ],
       "properties": {
+        "Node name for S&R": "Bounded Image Crop with Mask",
         "cnr_id": "pr-was-node-suite-comfyui-47064894",
-        "ver": "3ed45af34a14551dc28cb3127235cc7197d4633f",
-        "Node name for S&R": "Bounded Image Crop with Mask"
+        "ver": "3ed45af34a14551dc28cb3127235cc7197d4633f"
       },
       "widgets_values": [
         0,
@@ -759,99 +742,6 @@
         0,
         0,
         false
-      ]
-    },
-    {
-      "id": 16,
-      "type": "ImageRemoveBackground+",
-      "pos": [
-        -638.271484375,
-        116.79350280761719
-      ],
-      "size": [
-        227.49090576171875,
-        46.90909194946289
-      ],
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "rembg_session",
-          "type": "REMBG_SESSION",
-          "link": 16
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 78
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            82
-          ],
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            83
-          ],
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfyui_essentials",
-        "ver": "33ff89fd354d8ec3ab6affb605a79a931b445d99",
-        "Node name for S&R": "ImageRemoveBackground+"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 11,
-      "type": "TripoSGModelLoader",
-      "pos": [
-        534.1708374023438,
-        -31.240230560302734
-      ],
-      "size": [
-        315,
-        126
-      ],
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "triposg_model",
-          "type": "TRIPOSG_MODEL",
-          "links": [
-            157
-          ]
-        },
-        {
-          "name": "triposg_vae",
-          "type": "TRIPOSG_VAE",
-          "links": [
-            179
-          ]
-        }
-      ],
-      "properties": {
-        "aux_id": "fredconex/ComfyUI-TripoSG",
-        "ver": "cb38efe19ea6ad6abd76d5f1973f59370cd8553f",
-        "Node name for S&R": "TripoSGModelLoader"
-      },
-      "widgets_values": [
-        "comfyui\\models\\diffusers\\TripoSG",
-        "sdpa",
-        true
       ]
     },
     {
@@ -866,10 +756,11 @@
         150
       ],
       "flags": {},
-      "order": 10,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
+          "label": "宽度",
           "name": "width",
           "type": "INT",
           "widget": {
@@ -878,6 +769,7 @@
           "link": 97
         },
         {
+          "label": "高度",
           "name": "height",
           "type": "INT",
           "widget": {
@@ -888,18 +780,19 @@
       ],
       "outputs": [
         {
+          "label": "图像",
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
             143
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "Node name for S&R": "EmptyImage",
         "cnr_id": "comfy-core",
-        "ver": "0.3.26",
-        "Node name for S&R": "EmptyImage"
+        "ver": "0.3.26"
       },
       "widgets_values": [
         1024,
@@ -920,15 +813,17 @@
         150
       ],
       "flags": {},
-      "order": 21,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
+          "label": "latents",
           "name": "latents",
           "type": "LATENTS",
           "link": 178
         },
         {
+          "label": "triposg_vae",
           "name": "triposg_vae",
           "type": "TRIPOSG_VAE",
           "link": 179
@@ -936,18 +831,19 @@
       ],
       "outputs": [
         {
+          "label": "trimesh",
           "name": "trimesh",
           "type": "TRIMESH",
+          "slot_index": 0,
           "links": [
             180
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "Node name for S&R": "TripoSGVAEDecoder",
         "aux_id": "fredconex/ComfyUI-TripoSG",
-        "ver": "cb38efe19ea6ad6abd76d5f1973f59370cd8553f",
-        "Node name for S&R": "TripoSGVAEDecoder"
+        "ver": "cb38efe19ea6ad6abd76d5f1973f59370cd8553f"
       },
       "widgets_values": [
         1.005,
@@ -970,10 +866,11 @@
       "flags": {
         "collapsed": false
       },
-      "order": 18,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
+          "label": "图像",
           "name": "image",
           "type": "IMAGE",
           "link": 152
@@ -981,29 +878,32 @@
       ],
       "outputs": [
         {
+          "label": "图像",
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
             153,
             158
-          ],
-          "slot_index": 0
+          ]
         },
         {
+          "label": "宽度",
           "name": "width",
           "type": "INT",
           "links": null
         },
         {
+          "label": "高度",
           "name": "height",
           "type": "INT",
           "links": null
         }
       ],
       "properties": {
+        "Node name for S&R": "ImageResize+",
         "cnr_id": "comfyui_essentials",
-        "ver": "33ff89fd354d8ec3ab6affb605a79a931b445d99",
-        "Node name for S&R": "ImageResize+"
+        "ver": "33ff89fd354d8ec3ab6affb605a79a931b445d99"
       },
       "widgets_values": [
         2048,
@@ -1026,10 +926,11 @@
         1031.2169189453125
       ],
       "flags": {},
-      "order": 23,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
+          "label": "model_file",
           "name": "model_file",
           "type": "STRING",
           "widget": {
@@ -1040,18 +941,18 @@
       ],
       "outputs": [],
       "properties": {
+        "Node name for S&R": "Preview3D",
         "cnr_id": "comfy-core",
         "ver": "0.3.26",
-        "Node name for S&R": "Preview3D",
         "Camera Info": {
           "position": {
-            "x": 1.8086013973767396,
-            "y": 4.523499061301257,
-            "z": 7.319502099535393
+            "x": 1.1449840037499308,
+            "y": 1.5472910349481115,
+            "z": 9.728268305210527
           },
           "target": {
             "x": 0,
-            "y": 2.5,
+            "y": 2.3421284773671163,
             "z": 0
           },
           "zoom": 1,
@@ -1061,10 +962,8 @@
         "Material Mode": "normal"
       },
       "widgets_values": [
-        "G:/ai_stuff/ComfyUI/ComfyUI/output/3D/TripoSG_1743352439.glb",
-        "original",
-        "original",
-        ""
+        "/mnt/data/output/3D/TripoSG_1743399644.glb",
+        "original"
       ]
     },
     {
@@ -1081,33 +980,36 @@
       "flags": {
         "pinned": true
       },
-      "order": 2,
+      "order": 0,
       "mode": 0,
       "inputs": [],
       "outputs": [
         {
+          "label": "图像",
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
-            78
-          ],
-          "slot_index": 0
+            181
+          ]
         },
         {
+          "label": "遮罩",
           "name": "MASK",
           "type": "MASK",
-          "links": [],
-          "slot_index": 1
+          "slot_index": 1,
+          "links": []
         }
       ],
       "properties": {
+        "Node name for S&R": "LoadImage",
         "cnr_id": "comfy-core",
-        "ver": "0.3.26",
-        "Node name for S&R": "LoadImage"
+        "ver": "0.3.26"
       },
       "widgets_values": [
-        "Image_1_16.png",
-        "image"
+        "001.jpg",
+        "image",
+        ""
       ]
     },
     {
@@ -1122,15 +1024,17 @@
         198
       ],
       "flags": {},
-      "order": 20,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
+          "label": "triposg_model",
           "name": "triposg_model",
           "type": "TRIPOSG_MODEL",
           "link": 157
         },
         {
+          "label": "image",
           "name": "image",
           "type": "IMAGE",
           "link": 158
@@ -1138,18 +1042,19 @@
       ],
       "outputs": [
         {
+          "label": "latents",
           "name": "latents",
           "type": "LATENTS",
+          "slot_index": 0,
           "links": [
             178
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "Node name for S&R": "TripoSGImageToMesh",
         "aux_id": "fredconex/ComfyUI-TripoSG",
-        "ver": "cb38efe19ea6ad6abd76d5f1973f59370cd8553f",
-        "Node name for S&R": "TripoSGImageToMesh"
+        "ver": "cb38efe19ea6ad6abd76d5f1973f59370cd8553f"
       },
       "widgets_values": [
         7,
@@ -1159,21 +1064,145 @@
       ]
     },
     {
+      "id": 55,
+      "type": "PreviewImage",
+      "pos": [
+        710.5814208984375,
+        219.2711944580078
+      ],
+      "size": [
+        629.664306640625,
+        667.927001953125
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "图像",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 153
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.26"
+      },
+      "widgets_values": [
+        ""
+      ]
+    },
+    {
+      "id": 11,
+      "type": "TripoSGModelLoader",
+      "pos": [
+        534.1708374023438,
+        -31.240230560302734
+      ],
+      "size": [
+        315,
+        126
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "label": "triposg_model",
+          "name": "triposg_model",
+          "type": "TRIPOSG_MODEL",
+          "links": [
+            157
+          ]
+        },
+        {
+          "label": "triposg_vae",
+          "name": "triposg_vae",
+          "type": "TRIPOSG_VAE",
+          "links": [
+            179
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TripoSGModelLoader",
+        "aux_id": "fredconex/ComfyUI-TripoSG",
+        "ver": "cb38efe19ea6ad6abd76d5f1973f59370cd8553f"
+      },
+      "widgets_values": [
+        "comfyui\\models\\diffusers\\TripoSG",
+        "sageattn",
+        true
+      ]
+    },
+    {
+      "id": 81,
+      "type": "InspyrenetRembg",
+      "pos": [
+        -709.1962890625,
+        18.639429092407227
+      ],
+      "size": [
+        315,
+        78
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 181
+        }
+      ],
+      "outputs": [
+        {
+          "label": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            182
+          ]
+        },
+        {
+          "label": "MASK",
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            183
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "InspyrenetRembg"
+      },
+      "widgets_values": [
+        "default"
+      ]
+    },
+    {
       "id": 32,
       "type": "TripoSGExportMesh",
       "pos": [
-        1233.8277587890625,
-        181.79312133789062
+        1233.637451171875,
+        179.27615356445312
       ],
       "size": [
         315,
         106
       ],
       "flags": {},
-      "order": 22,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
+          "label": "trimesh",
           "name": "trimesh",
           "type": "TRIMESH",
           "link": 180
@@ -1181,18 +1210,19 @@
       ],
       "outputs": [
         {
+          "label": "file_path",
           "name": "file_path",
           "type": "STRING",
+          "slot_index": 0,
           "links": [
             48
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "Node name for S&R": "TripoSGExportMesh",
         "aux_id": "fredconex/ComfyUI-TripoSG",
-        "ver": "cb38efe19ea6ad6abd76d5f1973f59370cd8553f",
-        "Node name for S&R": "TripoSGExportMesh"
+        "ver": "cb38efe19ea6ad6abd76d5f1973f59370cd8553f"
       },
       "widgets_values": [
         "3D/TripoSG",
@@ -1202,14 +1232,6 @@
     }
   ],
   "links": [
-    [
-      16,
-      17,
-      0,
-      16,
-      0,
-      "REMBG_SESSION"
-    ],
     [
       31,
       27,
@@ -1225,30 +1247,6 @@
       13,
       0,
       "STRING"
-    ],
-    [
-      78,
-      18,
-      0,
-      16,
-      1,
-      "IMAGE"
-    ],
-    [
-      82,
-      16,
-      0,
-      15,
-      0,
-      "IMAGE"
-    ],
-    [
-      83,
-      16,
-      1,
-      15,
-      1,
-      "MASK"
     ],
     [
       97,
@@ -1481,6 +1479,30 @@
       32,
       0,
       "TRIMESH"
+    ],
+    [
+      181,
+      18,
+      0,
+      81,
+      0,
+      "IMAGE"
+    ],
+    [
+      182,
+      81,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      183,
+      81,
+      1,
+      15,
+      1,
+      "MASK"
     ]
   ],
   "groups": [
@@ -1533,14 +1555,14 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.6934334949441334,
+      "scale": 0.3073560549142846,
       "offset": [
-        973.1317909158098,
-        398.25742082931794
+        1764.7309134047764,
+        930.2407266028217
       ]
     },
     "ue_links": [],
-    "VHS_latentpreview": true,
+    "VHS_latentpreview": false,
     "VHS_latentpreviewrate": 0,
     "VHS_MetadataImage": true,
     "VHS_KeepIntermediate": true
