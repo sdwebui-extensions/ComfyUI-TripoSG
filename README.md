@@ -31,5 +31,5 @@ Warning: Torch Cluster takes a while to build, that's expected!
 
 ## Aknowledgements
 https://github.com/VAST-AI-Research/TripoSG  
-https://github.com/kijai/ComfyUI-Hunyuan3DWrapper
+https://github.com/kijai/ComfyUI-Hunyuan3DWrapper  
 https://github.com/Tencent/FlashVDM
