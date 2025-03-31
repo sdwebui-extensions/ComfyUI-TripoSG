@@ -1,14 +1,10 @@
 import os
 import torch
 import numpy as np
-import trimesh as Trimesh
 import folder_paths
 import comfy.model_management as mm
 from PIL import Image
 from comfy.utils import ProgressBar
-
-# TripoSG model imports
-from .triposg.pipelines.pipeline_triposg import TripoSGPipeline
 
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -54,6 +50,8 @@ class TripoSGModelLoader:
     DESCRIPTION = "Loads a TripoSG model for 3D mesh generation from a single image"
 
     def loadmodel(self, model_path, attention_mode="sdpa", use_float16=True):
+        # TripoSG model imports
+        from .triposg.pipelines.pipeline_triposg import TripoSGPipeline
         device = mm.get_torch_device()
         offload_device = mm.unet_offload_device()
         
@@ -64,8 +62,11 @@ class TripoSGModelLoader:
             from huggingface_hub import snapshot_download
             triposg_weights_dir = os.path.join(script_directory, "pretrained_weights", "TripoSG")
             if not os.path.exists(triposg_weights_dir):
-                log.info("Downloading TripoSG model from HuggingFace...")
-                snapshot_download(repo_id="VAST-AI/TripoSG", local_dir=triposg_weights_dir)
+                if os.path.exists("/stable-diffusion-cache/models/VAST-AI"):
+                    triposg_weights_dir = "/stable-diffusion-cache/models/VAST-AI/TripoSG"
+                else:
+                    log.info("Downloading TripoSG model from HuggingFace...")
+                    snapshot_download(repo_id="VAST-AI/TripoSG", local_dir=triposg_weights_dir)
             model_path = triposg_weights_dir
         elif not os.path.exists(model_path):
             # Try to find in ComfyUI model paths
@@ -73,7 +74,10 @@ class TripoSGModelLoader:
             if possible_path is not None:
                 model_path = possible_path
             else:
-                raise ValueError(f"Model path {model_path} does not exist")
+                if os.path.exists("/stable-diffusion-cache/models/VAST-AI"):
+                    model_path = "/stable-diffusion-cache/models/VAST-AI/TripoSG"
+                else:
+                    raise ValueError(f"Model path {model_path} does not exist")
         
         pipe = TripoSGPipeline.from_pretrained(model_path).to(device, dtype)
         
@@ -101,6 +105,7 @@ class TripoSGVAEDecoder:
 
     def process(self, triposg_vae, latents, bound_value, dense_octree_depth, hierarchical_octree_depth, chunk_size):
         device = mm.get_torch_device()
+        import trimesh as Trimesh
         
         # Ensure latents are properly formatted
         if latents is not None:
