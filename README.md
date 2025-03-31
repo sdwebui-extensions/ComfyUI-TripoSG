@@ -25,9 +25,11 @@ Warning: Torch Cluster takes a while to build, that's expected!
 - Higher values for the octree depth parameters will result in more detailed meshes but require more VRAM and processing time.
 - TripoSG model outputs a clean mesh that usually doesn't require post-processing.
 - You can use the standard ComfyUI mesh viewing and processing nodes with the output from TripoSG.
+- FlashVDM from Tencent is available, compatible with mc and dmc (requires pip install diso)
 
 ![workflow (3)](https://github.com/user-attachments/assets/dacfd371-4200-4629-b5f7-a6735344fb9d)
 
 ## Aknowledgements
 https://github.com/VAST-AI-Research/TripoSG  
 https://github.com/kijai/ComfyUI-Hunyuan3DWrapper
+https://github.com/Tencent/FlashVDM
