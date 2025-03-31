@@ -1,0 +1,42 @@
+# Python bytecode files
+**/__pycache__/
+#triposg/**/_pycache_/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE settings
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# ComfyUI specific
+input/
+output/
+temp/
+
+# Log files
+*.log
+
+# Environment variables
+.env
+
+# Model files (potentially large)
+*.pth
+*.safetensors
+*.ckpt
+*.onnx 
+*.pyc
+*.pyo

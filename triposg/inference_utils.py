@@ -5,6 +5,38 @@ from skimage import measure
 
 from triposg.utils.typing import *
 
+def generate_grid_points(
+    bbox_min: np.ndarray,
+    bbox_max: np.ndarray,
+    octree_resolution: int,
+    indexing: str = "ij",
+):
+    """
+    Generate a grid of points within the specified bounding box.
+    
+    Args:
+        bbox_min: Minimum coordinates of the bounding box
+        bbox_max: Maximum coordinates of the bounding box
+        octree_resolution: Resolution of the grid
+        indexing: Indexing convention for meshgrid ("ij" or "xy")
+        
+    Returns:
+        xyz: Array of grid points
+        grid_size: Size of the grid
+        length: Length of the bounding box
+    """
+    length = bbox_max - bbox_min
+    num_cells = octree_resolution
+
+    x = np.linspace(bbox_min[0], bbox_max[0], int(num_cells) + 1, dtype=np.float32)
+    y = np.linspace(bbox_min[1], bbox_max[1], int(num_cells) + 1, dtype=np.float32)
+    z = np.linspace(bbox_min[2], bbox_max[2], int(num_cells) + 1, dtype=np.float32)
+    [xs, ys, zs] = np.meshgrid(x, y, z, indexing=indexing)
+    xyz = np.stack((xs, ys, zs), axis=-1)
+    grid_size = [int(num_cells) + 1, int(num_cells) + 1, int(num_cells) + 1]
+
+    return xyz, grid_size, length
+
 def generate_dense_grid_points_gpu(bbox_min: torch.Tensor,
                                    bbox_max: torch.Tensor,
                                    octree_depth: int,
